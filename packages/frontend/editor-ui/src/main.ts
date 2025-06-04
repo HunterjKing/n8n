@@ -42,18 +42,25 @@ app.use(ChartJSPlugin);
 
 app.mount('#app');
 
+// Only register service worker when not in an iframe
+if (window.self === window.top && 'serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/service-worker.js').catch((error) => {
+    console.error('Service worker registration failed:', error);
+  });
+}
+
 if (!import.meta.env.PROD) {
-	// Make sure that we get all error messages properly displayed
-	// as long as we are not in production mode
-	window.onerror = (message, _source, _lineno, _colno, error) => {
-		// eslint-disable-next-line @typescript-eslint/no-base-to-string
-		if (message.toString().includes('ResizeObserver')) {
-			// That error can apparently be ignored and can probably
-			// not do anything about it anyway
-			return;
-		}
-		console.error('error caught in main.ts');
-		console.error(message);
-		console.error(error);
-	};
+  // Make sure that we get all error messages properly displayed
+  // as long as we are not in production mode
+  window.onerror = (message, _source, _lineno, _colno, error) => {
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string
+    if (message.toString().includes('ResizeObserver')) {
+      // That error can apparently be ignored and can probably
+      // not do anything about it anyway
+      return;
+    }
+    console.error('error caught in main.ts');
+    console.error(message);
+    console.error(error);
+  };
 }
